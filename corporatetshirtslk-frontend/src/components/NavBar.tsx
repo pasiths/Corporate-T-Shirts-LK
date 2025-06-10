@@ -27,7 +27,7 @@ const NavBar = () => {
 
                 <div className="flex justify-end items-center gap-1">
                     <Link to="/wishlist">
-                        <img src={heartIcon} alt="Heart icon" className="inline-block md:w-13 md:h-13 w-10 h-10" />
+                        <img src={heartIcon} alt="View wishlist" className="inline-block md:w-13 md:h-13 w-10 h-10" />
                     </Link>
                     <Link to="/login">
                         <img src={userIcon} alt="User icon" className="inline-block md:w-13 md:h-13 w-10 h-10" />
