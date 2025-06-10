@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import menuIcon from '@/assets/icons/menu.svg';
 import logoIcon from '@/assets/icons/logo.svg';
 import heartIcon from '@/assets/icons/heart.svg';
+import userIcon from '@/assets/icons/user.svg';
 
 const NavBar = () => {
     return (
@@ -22,8 +23,9 @@ const NavBar = () => {
                     <img src={logoIcon} alt="logo" className="inline-block md:w-13 md:h-13 w-10 h-10" />
                 </div>
 
-                <div className="">
+                <div className="flex justify-end items-center gap-1">
                     <img src={heartIcon} alt="Heart icon" className="inline-block md:w-13 md:h-13 w-10 h-10" />
+                    <img src={userIcon} alt="User icon" className="inline-block md:w-13 md:h-13 w-10 h-10" />
                 </div>
             </nav>
         </header>
