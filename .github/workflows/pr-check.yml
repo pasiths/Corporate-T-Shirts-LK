@@ -1,0 +1,42 @@
+name: PR Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # FRONTEND TASKS
+      - name: Install frontend dependencies
+        run: npm i
+        working-directory: ./corporatetshirtslk-frontend/
+
+      - name: Run frontend lint
+        run: npm run lint
+        working-directory: ./corporatetshirtslk-frontend/
+
+      - name: Build frontend project
+        run: npm run build
+        working-directory: ./corporatetshirtslk-frontend/
+
+      # BACKEND TASKS
+      - name: Install backend dependencies
+        run: npm i
+        working-directory: ./corporatetshirtslk-backend/
+
+      - name: Build backend project
+        run: npm run build
+        working-directory: ./corporatetshirtslk-backend/

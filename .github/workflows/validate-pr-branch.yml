@@ -1,0 +1,23 @@
+name: Enforce PR Source Branch
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-source-branch:
+    name: Check Source Branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR is from allowed branches
+        run: |
+          echo "SOURCE BRANCH: ${{ github.head_ref }}"
+          echo "TARGET BRANCH: ${{ github.base_ref }}"
+
+          if [[ "${{ github.head_ref }}" != "dev" && "${{ github.head_ref }}" != hotfix* ]]; then
+            echo "❌ Pull requests to 'main' are only allowed from 'dev' or 'hotfix/*' branches."
+            exit 1
+          fi
+
+          echo "✅ Branch '${{ github.head_ref }}' is allowed."

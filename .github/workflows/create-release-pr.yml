@@ -1,0 +1,102 @@
+name: Create Auto Release Branch
+
+on:
+  workflow_dispatch:  # Manual trigger
+  push:
+    branches:
+      - main
+
+jobs:
+  create-release-branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Fetch all remote branches
+        run: git fetch --all
+
+      - name: Determine version and label
+        id: versioning
+        run: |
+          echo "🔍 Checking latest release branch..."
+          BRANCHES=$(git ls-remote --heads origin "refs/heads/release/*" | awk '{print $2}' | sed 's|refs/heads/||')
+          echo "$BRANCHES"
+          
+          LATEST=$(echo "$BRANCHES" | grep -Eo 'release/v[0-9]+\.[0-9]+\.[0-9]+-[a-z0-9]+-o[0-9]+' | sort -V | tail -n 1)
+          
+          PACKAGE_VERSION=$(jq -r '.version' corporatetshirtslk-frontend/package.json)
+          echo "📦 package.json version: $PACKAGE_VERSION"
+          
+          if [[ -z "$LATEST" ]]; then
+            echo "No existing release branches found."
+            VERSION="$PACKAGE_VERSION"
+            LABEL="m1"
+          else
+            LATEST_VERSION=$(echo "$LATEST" | grep -oP 'release/v\K[0-9]+\.[0-9]+\.[0-9]+')
+            LABEL=$(echo "$LATEST" | grep -oP "${LATEST_VERSION}-\K[^-]+(?=-o)")
+            
+            echo "🔁 Latest release branch version: $LATEST_VERSION"
+            
+            if [ "$(printf "%s\n%s" "$PACKAGE_VERSION" "$LATEST_VERSION" | sort -V | tail -n1)" = "$PACKAGE_VERSION" ] && [ "$PACKAGE_VERSION" != "$LATEST_VERSION" ]; then
+              echo "✅ package.json version is newer. Using it."
+              VERSION="$PACKAGE_VERSION"
+            else
+              echo "⚠️ package.json version is same or older. Bumping patch of latest version."
+              MAJOR=$(echo "$LATEST_VERSION" | cut -d. -f1)
+              MINOR=$(echo "$LATEST_VERSION" | cut -d. -f2)
+              PATCH=$(echo "$LATEST_VERSION" | cut -d. -f3)
+              PATCH=$((PATCH + 1))
+              VERSION="${MAJOR}.${MINOR}.${PATCH}"
+            fi
+          fi
+          
+          echo "✅ Final version: $VERSION"
+          echo "✅ Final label: $LABEL"
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "label=$LABEL" >> $GITHUB_OUTPUT
+
+      - name: Find latest matching suffix and increment
+        id: find_suffix
+        run: |
+          VERSION=${{ steps.versioning.outputs.version }}
+          LABEL=${{ steps.versioning.outputs.label }}
+
+          BRANCHES=$(git ls-remote --heads origin "refs/heads/release/v${VERSION}-${LABEL}-o*" | awk '{print $2}' | sed 's|refs/heads/||')
+
+          MAX=0
+          for branch in $BRANCHES; do
+            SUFFIX=$(echo $branch | grep -oP 'o\K\d+')
+            if [[ "$SUFFIX" =~ ^[0-9]+$ ]]; then
+              if [ "$SUFFIX" -gt "$MAX" ]; then
+                MAX=$SUFFIX
+              fi
+            fi
+          done
+
+          NEXT_SUFFIX=$(printf "o%03d" $((MAX + 1)))
+          echo "suffix=$NEXT_SUFFIX" >> $GITHUB_OUTPUT
+          echo "✅ Next suffix: $NEXT_SUFFIX"
+
+      - name: Create and push new release branch
+        run: |
+          VERSION=${{ steps.versioning.outputs.version }}
+          LABEL=${{ steps.versioning.outputs.label }}
+          SUFFIX=${{ steps.find_suffix.outputs.suffix }}
+          BRANCH_NAME="release/v${VERSION}-${LABEL}-${SUFFIX}"
+
+          echo "Creating branch $BRANCH_NAME from origin/main..."
+
+          git checkout origin/main -b $BRANCH_NAME
+          git push origin $BRANCH_NAME
+
+          echo "✅ Branch '$BRANCH_NAME' created and pushed."
