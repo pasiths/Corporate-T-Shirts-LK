@@ -20,12 +20,18 @@ const NavBar = () => {
                 </div>
 
                 <div className="">
-                    <img src={logoIcon} alt="logo" className="inline-block md:w-13 md:h-13 w-10 h-10" />
+                    <Link to="/">
+                        <img src={logoIcon} alt="logo" className="inline-block md:w-13 md:h-13 w-10 h-10" />
+                    </Link>
                 </div>
 
                 <div className="flex justify-end items-center gap-1">
-                    <img src={heartIcon} alt="Heart icon" className="inline-block md:w-13 md:h-13 w-10 h-10" />
-                    <img src={userIcon} alt="User icon" className="inline-block md:w-13 md:h-13 w-10 h-10" />
+                    <Link to="/wishlist">
+                        <img src={heartIcon} alt="Heart icon" className="inline-block md:w-13 md:h-13 w-10 h-10" />
+                    </Link>
+                    <Link to="/login">
+                        <img src={userIcon} alt="User icon" className="inline-block md:w-13 md:h-13 w-10 h-10" />
+                    </Link>
                 </div>
             </nav>
         </header>
