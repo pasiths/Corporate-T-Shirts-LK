@@ -18,7 +18,7 @@ const Footer = () => {
                     <p className="text-[12px] text-zinc-700">Privacy</p>
                     <p className="text-[12px] text-zinc-700">Term of use</p>
                     <p className="text-[12px] text-zinc-700">Return policy</p>
-                    <p className="text-[12px] text-zinc-700">Complience</p>
+                    <p className="text-[12px] text-zinc-700">Compliance</p>
 
                 </div>
                 <div className="">
