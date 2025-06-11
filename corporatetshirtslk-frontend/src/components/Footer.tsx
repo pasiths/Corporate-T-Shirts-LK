@@ -2,10 +2,10 @@ import logoIcon from '@/assets/icons/logo.svg';
 
 const Footer = () => {
     return (
-        <footer className="mt-12.5 pb-7">
+        <footer className="mt-[3.125rem] pb-[1.75rem] font-poppins">
             <div className="flex justify-between items-start mx-80 mb-9.5">
-                <div className="" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    <h3 className="text-sm font-semibold mb-2.5" style={{ fontFamily: 'Poppins, sans-serif' }}>Know Us</h3>
+                <div className="">
+                    <h3 className="text-sm font-semibold mb-2.5">Know Us</h3>
                     <p className="text-[12px] text-zinc-700">About Us</p>
                     <p className="text-[12px] text-zinc-700">Contact Us</p>
                     <p className="text-[12px] text-zinc-700">Press</p>
@@ -13,7 +13,7 @@ const Footer = () => {
                     <p className="text-[12px] text-zinc-700">Elexo Earn</p>
                 </div>
                 <div className="">
-                    <h3 className="text-sm font-semibold mb-2.5 " style={{ fontFamily: 'Poppins, sans-serif' }}>Policy</h3>
+                    <h3 className="text-sm font-semibold mb-2.5 ">Policy</h3>
                     <p className="text-[12px] text-zinc-700">Security</p>
                     <p className="text-[12px] text-zinc-700">Privacy</p>
                     <p className="text-[12px] text-zinc-700">Term of use</p>
@@ -22,7 +22,7 @@ const Footer = () => {
 
                 </div>
                 <div className="">
-                    <h3 className="text-sm font-semibold mb-2.5 " style={{ fontFamily: 'Poppins, sans-serif' }}>Help you</h3>
+                    <h3 className="text-sm font-semibold mb-2.5 ">Help you</h3>
                     <p className="text-[12px] text-zinc-700">Return and Cancelation</p>
                     <p className="text-[12px] text-zinc-700">Membership</p>
                     <p className="text-[12px] text-zinc-700">Payments</p>
@@ -31,7 +31,7 @@ const Footer = () => {
 
                 </div>
                 <div className="">
-                    <h3 className="text-sm font-semibold mb-2.5 " style={{ fontFamily: 'Poppins, sans-serif' }}>Social</h3>
+                    <h3 className="text-sm font-semibold mb-2.5 ">Social</h3>
                     <p className="text-[12px] text-zinc-700">Facebook</p>
                     <p className="text-[12px] text-zinc-700">Instagram</p>
                     <p className="text-[12px] text-zinc-700">Twitter</p>
@@ -43,7 +43,7 @@ const Footer = () => {
             <div className="border border-[#424242] mx-5.5">
                 {/* Line */}
             </div>
-            <div className="pt-7.5 mx-40 flex justify-between items-start" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="pt-7.5 mx-40 flex justify-between items-start" >
                 <div className="">
                     <h3 className="text-sm font-semibold mb-2.5">Mail Us</h3>
                     <p className="text-[12px]">
