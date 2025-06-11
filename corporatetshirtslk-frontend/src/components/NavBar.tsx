@@ -7,7 +7,7 @@ import userIcon from '@/assets/icons/user.svg';
 
 const NavBar = () => {
     return (
-        <header className="md:px-13 md:mt-13 px-5 mt-7">
+        <header className="md:px-13 md:pt-13 px-5 pt-7 font-beatrice-medium">
             <nav className="flex justify-between items-center ">
                 <div className="flex justify-start items-center gap-8">
                     <img src={menuIcon} alt="Menu Icon" width={26} height={16} className="inline-block" />
