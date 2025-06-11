@@ -28,5 +28,9 @@
 
 @theme {
   --font-poppins: "Poppins", sans-serif; 
+  --font-beatrice: "Beatrice Display Trial Regular", sans-serif;
   --font-beatrice-medium: "Beatrice Display Trial Medium", sans-serif;
+  --font-beatrice-semibold: "Beatrice Display Trial Semibold", sans-serif;
+
+  --tracking-2px: 2px;
 }
