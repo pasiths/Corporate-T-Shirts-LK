@@ -4,11 +4,11 @@ import Footer from "../components/Footer";
 
 const ClientLayout = () => {
     return (<div className="min-h-screen">
+        <NavBar />
         <main className="">
-            <NavBar/>
             <Outlet />
-            <Footer />
         </main>
+        <Footer />
     </div>);
 }
 
