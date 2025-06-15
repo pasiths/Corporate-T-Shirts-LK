@@ -6,6 +6,9 @@ import product1 from '@/assets/img/product1.svg';
 import product2 from '@/assets/img/product2.svg';
 import product3 from '@/assets/img/product3.svg';
 import product4 from '@/assets/img/product4.svg';
+import product5 from '@/assets/img/product5.svg';
+import product6 from '@/assets/img/product6.svg';
+import product7 from '@/assets/img/product7.svg';
 import shirt1 from '@/assets/img/shirt1.svg';
 import shirt2 from '@/assets/img/shirt2.svg';
 import shirt3 from '@/assets/img/shirt3.svg';
@@ -389,19 +392,22 @@ const HomePage = () => {
                     <img src={downArrowIcon} alt="down arrow icon" className="h-3.5 w-3.5" />
                 </button>
             </section>
-            <section className="flex flex-col justify-center items-center gap-[0.8125rem]">
+            <section className="flex flex-col justify-center items-center gap-[0.8125rem] mb-28">
                 <h1 className="text-5xl font-beatrice uppercase text-black">
                     Our Approach to fashion design
                 </h1>
                 <p className="font-light text-base text-black text-center">
-                    at elegant vogue , we blend creativity with craftsmanship to create <br/>
-                    fashion that transcends trends and stands the test of time each <br/>
-                    design is meticulously crafted, ensuring the highest quelity <br/>
+                    at elegant vogue , we blend creativity with craftsmanship to create <br />
+                    fashion that transcends trends and stands the test of time each <br />
+                    design is meticulously crafted, ensuring the highest quelity <br />
                     exqulsite finish
                 </p>
             </section>
-            <section className="">
-
+            <section className="flex flex-row justify-center items-start gap-9  mb-31">
+                <img src={product7} alt="product 7" className="w-[19.813rem] h-97" />
+                <img src={product5} alt="product 5" className="w-[19.813rem] h-[26.188rem] mt-18" />
+                <img src={product1} alt="product 1" className="w-[19.813rem] h-[26.188rem] bg-[#f4f6f5]" />
+                <img src={product6} alt="product 6" className="w-[19.813rem] h-97 mt-25" />
             </section>
         </div>
     );
