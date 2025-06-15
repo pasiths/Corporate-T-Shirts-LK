@@ -6,10 +6,10 @@ import bgImg from '@/assets/img/bg-img.svg';
 
 const ClientLayout = () => {
     return (
-        <div className="min-h-screen bg-cover bg-center bg-no-repeat"
-    style={{ backgroundImage: `url(${bgImg})` }}>
+        <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${bgImg})` }}>
             <NavBar />
-            <main className="min-h-[calc(100vh-30rem)]">
+            <main className="flex-grow">
                 <Outlet />
             </main>
             <Footer />
