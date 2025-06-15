@@ -245,7 +245,7 @@ const HomePage = () => {
                     </button>
                 </div>
             </section>
-            <section className="">
+            <section className="flex flex-col mb-41">
                 <h1 className="font-beatrice-extrabold text-5xl leading-10 text-black mb-1">
                     XIV<br />
                     COLLECTIONS<br />
@@ -389,8 +389,16 @@ const HomePage = () => {
                     <img src={downArrowIcon} alt="down arrow icon" className="h-3.5 w-3.5" />
                 </button>
             </section>
-            <section className="">
-
+            <section className="flex flex-col justify-center items-center gap-[0.8125rem]">
+                <h1 className="text-5xl font-beatrice uppercase text-black">
+                    Our Approach to fashion design
+                </h1>
+                <p className="font-light text-base text-black text-center">
+                    at elegant vogue , we blend creativity with craftsmanship to create <br/>
+                    fashion that transcends trends and stands the test of time each <br/>
+                    design is meticulously crafted, ensuring the highest quelity <br/>
+                    exqulsite finish
+                </p>
             </section>
             <section className="">
 
