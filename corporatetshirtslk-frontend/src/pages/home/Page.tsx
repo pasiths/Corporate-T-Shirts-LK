@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import searchIcon from '@/assets/icons/search.svg';
 import arrowBig from '@/assets/icons/arrow-big.svg';
 import arrow from '@/assets/icons/arrow.svg';
@@ -16,7 +18,27 @@ import shirt4 from '@/assets/img/shirt4.svg';
 import plusIcon from '@/assets/icons/plus.svg'
 import downArrowIcon from '@/assets/icons/down-arrow.svg';
 
+const changeFavicon = (faviconUrl: string) => {
+    const existingLink = document.querySelector<HTMLLinkElement>("link[rel*='icon']");
+
+    if (existingLink) {
+        existingLink.href = faviconUrl;
+    } else {
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        link.href = faviconUrl;
+        document.head.appendChild(link);
+    }
+};
+
 const HomePage = () => {
+    useEffect(() => {
+        document.title = 'Home - Corporatet Shirts LK'; // Set your desired title
+
+        // Change favicon dynamically
+        changeFavicon('/logo.svg'); // or .ico, .png, etc.
+    }, []);
+
     return (
         <div className="font-roboto-slab tracking-2px mx-[3.125rem] my-[4.375rem]">
             <section className="flex flex-col gap-3.5 mb-24">
