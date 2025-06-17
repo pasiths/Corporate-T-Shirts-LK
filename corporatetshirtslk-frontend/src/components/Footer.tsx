@@ -13,7 +13,7 @@ const Footer = () => {
                     <p className="text-[12px] text-zinc-700">Elexo Earn</p>
                 </div>
                 <div>
-                    <h3 className="text-sm font-semibold mb-2.5 ">Policy</h3>
+                    <h3 className="text-sm font-semibold mb-2.5">Policy</h3>
                     <p className="text-[12px] text-zinc-700">Security</p>
                     <p className="text-[12px] text-zinc-700">Privacy</p>
                     <p className="text-[12px] text-zinc-700">Terms of use</p>
