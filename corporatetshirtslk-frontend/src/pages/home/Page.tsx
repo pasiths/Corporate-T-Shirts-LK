@@ -88,53 +88,50 @@ const products = [
     // Add more mock products as needed
 ];
 
+const handlePaginate = ({
+    direction,
+    currentIndex,
+    perPage,
+    totalLength,
+    setIndex,
+}: {
+    direction: 'next' | 'prev';
+    currentIndex: number;
+    perPage: number;
+    totalLength: number;
+    setIndex: React.Dispatch<React.SetStateAction<number>>;
+}) => {
+    if (direction === 'next' && currentIndex + perPage - 1 < totalLength) {
+        setIndex(currentIndex + perPage - 1);
+    } else if (direction === 'prev' && currentIndex > 0) {
+        setIndex(currentIndex - perPage + 1);
+    }
+};
+
+const getVisibleItems = <T,>(items: T[], startIndex: number, perPage: number): T[] => {
+    return items.slice(startIndex, startIndex + perPage);
+};
+
 const HomePage = () => {
 
     const [startIndex, setStartIndex] = useState(0);
     const [startIndexShirt, setStartIndexShirt] = useState(0);
-    const itemsPerPage = 4; // Number of items to show per page
-    const shirtPerPage = 6; // Number of shirts to show per page
+    const itemsPerPage = 4;
+    const shirtPerPage = 6;
 
     useEffect(() => {
-        document.title = 'Home - Corporatet Shirts LK'; // Set your desired title
-
-        // Change favicon dynamically
-        changeFavicon('/logo.svg'); // or .ico, .png, etc.
+        document.title = 'Home - Corporate Shirts LK';
+        changeFavicon('/logo.svg');
     }, []);
+
+    const visibleImages = getVisibleItems(productImages, startIndex, itemsPerPage);
+    const visibleImagesShirt = getVisibleItems(shirtDetails, startIndexShirt, shirtPerPage);
 
     const canGoNext = startIndex + itemsPerPage - 1 < productImages.length;
     const canGoPrev = startIndex > 0;
 
-    const nextImages = () => {
-        if (canGoNext) {
-            setStartIndex(startIndex + itemsPerPage - 1);
-        }
-    };
-
-    const prevImages = () => {
-        if (canGoPrev) {
-            setStartIndex(startIndex - itemsPerPage + 1);
-        }
-    };
-
-    const visibleImages = productImages.slice(startIndex, startIndex + itemsPerPage);
-
     const canGoNextShirt = startIndexShirt + shirtPerPage - 1 < shirtDetails.length;
     const canGoPrevShirt = startIndexShirt > 0;
-
-    const nextImagesShirt = () => {
-        if (canGoNextShirt) {
-            setStartIndexShirt(startIndexShirt + shirtPerPage - 1);
-        }
-    };
-
-    const prevImagesShirt = () => {
-        if (canGoPrevShirt) {
-            setStartIndexShirt(startIndexShirt - shirtPerPage + 1);
-        }
-    };
-
-    const visibleImagesShirt = shirtDetails.slice(startIndexShirt, startIndexShirt + shirtPerPage);
 
     const [activeCategory, setActiveCategory] = useState("all");
     const [showAll, setShowAll] = useState(false);
@@ -186,10 +183,22 @@ const HomePage = () => {
                             <img src={arrowBig} alt="Big arrow" className="w-12 h-3" />
                         </button>
                         <div className="flex flex-row items-center gap-3">
-                            <button onClick={prevImages} disabled={!canGoPrev} className="w-10 h-10 cursor-pointer outline-none border-none">
+                            <button onClick={() => handlePaginate({
+                                direction: 'prev',
+                                currentIndex: startIndex,
+                                perPage: itemsPerPage,
+                                totalLength: productImages.length,
+                                setIndex: setStartIndex
+                            })} disabled={!canGoPrev} className="w-10 h-10 cursor-pointer outline-none border-none">
                                 <img src={!canGoPrev ? arrowMuted : arrow} alt="Arrow" className={`w-10 h-10 cursor-pointer ${!canGoPrev ? "" : "rotate-180"}`} />
                             </button>
-                            <button onClick={nextImages} disabled={!canGoNext} className="w-10 h-10 cursor-pointer">
+                            <button onClick={() => handlePaginate({
+                                direction: 'next',
+                                currentIndex: startIndex,
+                                perPage: itemsPerPage,
+                                totalLength: productImages.length,
+                                setIndex: setStartIndex
+                            })} disabled={!canGoNext} className="w-10 h-10 cursor-pointer">
                                 <img src={!canGoNext ? arrowMuted : arrow} alt="Arrow" className={`w-10 h-10 cursor-pointer ${!canGoNext ? "rotate-180" : ""}`} />
                             </button>
                         </div>
@@ -238,10 +247,22 @@ const HomePage = () => {
                     ))}
                 </div>
                 <div className="flex flex-row justify-center items-center gap-3">
-                    <button onClick={prevImagesShirt} disabled={!canGoPrevShirt} className="w-10 h-10 cursor-pointer outline-none border-none">
+                    <button onClick={() => handlePaginate({
+                        direction: 'prev',
+                        currentIndex: startIndexShirt,
+                        perPage: shirtPerPage,
+                        totalLength: shirtDetails.length,
+                        setIndex: setStartIndexShirt
+                    })} disabled={!canGoPrevShirt} className="w-10 h-10 cursor-pointer outline-none border-none">
                         <img src={!canGoPrevShirt ? arrowMuted : arrow} alt="Arrow" className={`w-10 h-10 cursor-pointer ${!canGoPrevShirt ? "" : "rotate-180"}`} />
                     </button>
-                    <button onClick={nextImagesShirt} disabled={!canGoNextShirt} className="w-10 h-10 cursor-pointer">
+                    <button onClick={() => handlePaginate({
+                        direction: 'next',
+                        currentIndex: startIndexShirt,
+                        perPage: shirtPerPage,
+                        totalLength: shirtDetails.length,
+                        setIndex: setStartIndexShirt
+                    })} disabled={!canGoNextShirt} className="w-10 h-10 cursor-pointer">
                         <img src={!canGoNextShirt ? arrowMuted : arrow} alt="Arrow" className={`w-10 h-10 cursor-pointer ${!canGoNextShirt ? "rotate-180" : ""}`} />
                     </button>
                 </div>
