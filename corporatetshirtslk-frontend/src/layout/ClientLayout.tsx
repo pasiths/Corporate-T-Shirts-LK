@@ -6,7 +6,7 @@ import bgImg from '@/assets/img/bg-img.svg';
 
 const ClientLayout = () => {
     return (
-        <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
+        <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat scroll-smooth"
             style={{ backgroundImage: `url(${bgImg})` }}>
             <NavBar />
             <main className="flex-grow">

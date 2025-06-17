@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import searchIcon from '@/assets/icons/search.svg';
 import arrowBig from '@/assets/icons/arrow-big.svg';
 import arrow from '@/assets/icons/arrow.svg';
@@ -16,7 +18,131 @@ import shirt4 from '@/assets/img/shirt4.svg';
 import plusIcon from '@/assets/icons/plus.svg'
 import downArrowIcon from '@/assets/icons/down-arrow.svg';
 
+const changeFavicon = (faviconUrl: string) => {
+    const existingLink = document.querySelector<HTMLLinkElement>("link[rel*='icon']");
+
+    if (existingLink) {
+        existingLink.href = faviconUrl;
+    } else {
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        link.href = faviconUrl;
+        document.head.appendChild(link);
+    }
+};
+
+const productImages = [
+    product1, product2, product3, product4, product5, product6, product7
+];
+
+const shirtDetails = [
+    {
+        id: 1,
+        thumbnail: shirt1,
+        short: "V-Neck T-Shirt",
+        title: "Embroidered Seersucker Shirt",
+        price: "$99",
+    },
+    {
+        id: 2,
+        thumbnail: shirt2,
+        short: "Cotton T-Shirt",
+        title: "Basic Slim Fit T-Shirt",
+        price: "$99",
+    },
+    {
+        id: 3,
+        thumbnail: shirt3,
+        short: "Henley T-Shirt",
+        title: "Blurred Print T-Shirt",
+        price: "$99",
+    },
+    {
+        id: 4,
+        thumbnail: shirt4,
+        short: "Crewneck T-Shirt",
+        title: "Full Sleeve Zipper",
+        price: "$99",
+    },
+    {
+        id: 5,
+        thumbnail: shirt1,
+        short: "V-Neck T-Shirt",
+        title: "Embroidered Seersucker Shirt",
+        price: "$99",
+    },
+    {
+        id: 6,
+        thumbnail: shirt2,
+        short: "Cotton T-Shirt",
+        title: "Basic Slim Fit T-Shirt",
+        price: "$99",
+    }
+];
+
+const products = [
+    { id: 1, image: product4, name: "Basic Heavy Weight T-shirt", category: "men", subtitle: "Cotton T-Shirt", price: 199 },
+    { id: 2, image: product1, name: "Soft Wash straight Fit Jeans", category: "men", subtitle: "Cotton jeans", price: 199 },
+    { id: 3, image: product3, name: "Basic Heavy Weight T-shirt", category: "women", subtitle: "Cotton T-Shirt", price: 199 },
+    { id: 4, image: product4, name: "Basic Heavy Weight T-shirt", category: "kid", subtitle: "Cotton T-Shirt", price: 199 },
+    // Add more mock products as needed
+];
+
+const handlePaginate = ({
+    direction,
+    currentIndex,
+    perPage,
+    totalLength,
+    setIndex,
+}: {
+    direction: 'next' | 'prev';
+    currentIndex: number;
+    perPage: number;
+    totalLength: number;
+    setIndex: React.Dispatch<React.SetStateAction<number>>;
+}) => {
+    if (direction === 'next' && currentIndex + perPage - 1 < totalLength) {
+        setIndex(currentIndex + perPage - 1);
+    } else if (direction === 'prev' && currentIndex > 0) {
+        setIndex(currentIndex - perPage + 1);
+    }
+};
+
+const getVisibleItems = <T,>(items: T[], startIndex: number, perPage: number): T[] => {
+    return items.slice(startIndex, startIndex + perPage);
+};
+
 const HomePage = () => {
+
+    const [startIndex, setStartIndex] = useState(0);
+    const [startIndexShirt, setStartIndexShirt] = useState(0);
+    const itemsPerPage = 4;
+    const shirtPerPage = 6;
+
+    useEffect(() => {
+        document.title = 'Home - Corporate Shirts LK';
+        changeFavicon('/logo.svg');
+    }, []);
+
+    const visibleImages = getVisibleItems(productImages, startIndex, itemsPerPage);
+    const visibleImagesShirt = getVisibleItems(shirtDetails, startIndexShirt, shirtPerPage);
+
+    const canGoNext = startIndex + itemsPerPage - 1 < productImages.length;
+    const canGoPrev = startIndex > 0;
+
+    const canGoNextShirt = startIndexShirt + shirtPerPage - 1 < shirtDetails.length;
+    const canGoPrevShirt = startIndexShirt > 0;
+
+    const [activeCategory, setActiveCategory] = useState("all");
+    const [showAll, setShowAll] = useState(false);
+
+    const categories = ["all", "men", "women", "kid"];
+    const filteredProducts = activeCategory === "all"
+        ? products
+        : products.filter((p) => p.category === activeCategory);
+
+    const displayedProducts = showAll ? filteredProducts : filteredProducts.slice(0, 4);
+
     return (
         <div className="font-roboto-slab tracking-2px mx-[3.125rem] my-[4.375rem]">
             <section className="flex flex-col gap-3.5 mb-24">
@@ -49,7 +175,7 @@ const HomePage = () => {
                             2024
                         </p>
                     </div>
-                    <div className="flex flex-row items-center gap-10">
+                    <div className="flex flex-row items-center gap-10 w-100">
                         <button className="flex flex-row items-center justify-between pl-7 pr-5 w-2xs h-10 bg-[#d9d9d9] cursor-pointer">
                             <p className="text-base text-black tracking-normal">
                                 Go To Collection
@@ -57,20 +183,31 @@ const HomePage = () => {
                             <img src={arrowBig} alt="Big arrow" className="w-12 h-3" />
                         </button>
                         <div className="flex flex-row items-center gap-3">
-                            <button className="w-10 h-10 cursor-pointer outline-none border-none">
-                                <img src={arrowMuted} alt="Arrow" className="w-10 h-10 cursor-pointer" />
+                            <button onClick={() => handlePaginate({
+                                direction: 'prev',
+                                currentIndex: startIndex,
+                                perPage: itemsPerPage,
+                                totalLength: productImages.length,
+                                setIndex: setStartIndex
+                            })} disabled={!canGoPrev} className="w-10 h-10 cursor-pointer outline-none border-none">
+                                <img src={!canGoPrev ? arrowMuted : arrow} alt="Arrow" className={`w-10 h-10 cursor-pointer ${!canGoPrev ? "" : "rotate-180"}`} />
                             </button>
-                            <button className="w-10 h-10 cursor-pointer">
-                                <img src={arrow} alt="Arrow" className="w-10 h-10 cursor-pointer" />
+                            <button onClick={() => handlePaginate({
+                                direction: 'next',
+                                currentIndex: startIndex,
+                                perPage: itemsPerPage,
+                                totalLength: productImages.length,
+                                setIndex: setStartIndex
+                            })} disabled={!canGoNext} className="w-10 h-10 cursor-pointer">
+                                <img src={!canGoNext ? arrowMuted : arrow} alt="Arrow" className={`w-10 h-10 cursor-pointer ${!canGoNext ? "rotate-180" : ""}`} />
                             </button>
                         </div>
                     </div>
                 </div>
                 <div className="flex items-center gap-10 overflow-hidden">
-                    <img src={product1} alt="Product 1" className='w-[22.875rem] h-[23.5rem]' />
-                    <img src={product2} alt="Product 2" className='w-[22.875rem] h-[23.5rem]' />
-                    <img src={product3} alt="Product 3" className='w-[22.875rem] h-[23.5rem]' />
-                    <img src={product4} alt="Product 4" className='w-[22.875rem] h-[23.5rem]' />
+                    {visibleImages.map((src, i) => (
+                        <img key={i} src={src} alt={`Product ${i + 1}`} className="w-[22.875rem] h-[23.5rem] min-w-[22.875rem] min-h-[23.5rem] border border-[#D7D7D7]" />
+                    ))}
                 </div>
             </section>
             <section className="flex flex-col gap-[1.875rem] mb-[7.25rem]">
@@ -87,164 +224,46 @@ const HomePage = () => {
                     <button className='tracking-normal text-sm'>See All</button>
                 </div>
                 <div className="flex flex-row gap-[1.625rem] overflow-hidden items-center">
-                    <div className="flex flex-col gap-3.5 min-w-76 w-76 h-auto items-center">
-                        <div className="relative flex flex-col items-center">
-                            <img src={shirt1} alt="shirt 1" className="w-76 h-78" />
-                            <button className="outline-none border-none cursor-pointer">
-                                <img src={plusIcon} alt="plus icon" className="absolute  bottom-0 left-1/2 transform -translate-x-1/2" />
-                            </button>
-                        </div>
-                        <div className="flex justify-between items-end w-full">
-                            <div className="flex flex-col gap-2">
-                                <div className="flex flex-row items-center">
-                                    <p className="font-medium text-xs opacity-65 text-black tracking-normal">
-                                        V-Neck T-Shirt
-                                    </p>
-                                    <div className="w-3 h-3 bg-black ml-1.5 mr-0.5"></div>
-                                    <p className="font-light text-xs opacity-65 text-black">+5</p>
+                    {visibleImagesShirt.map((product) => (
+                        <div key={product.id} className="flex flex-col gap-3.5 min-w-76 w-76 items-center">
+                            <div className="relative flex flex-col items-center">
+                                <img src={product.thumbnail} alt={product.short} className="w-76 h-78" />
+                                <button className="outline-none border-none cursor-pointer">
+                                    <img src={plusIcon} alt="plus icon" className="absolute bottom-0 left-1/2 transform -translate-x-1/2" />
+                                </button>
+                            </div>
+                            <div className="flex justify-between items-end w-full">
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex flex-row items-center">
+                                        <p className="font-medium text-xs opacity-65 text-black tracking-normal">{product.short}</p>
+                                        <div className="w-3 h-3 bg-black ml-1.5 mr-0.5"></div>
+                                        <p className="font-light text-xs opacity-65 text-black">+5</p>
+                                    </div>
+                                    <p className="font-medium text-base tracking-normal">{product.title}</p>
                                 </div>
-                                <p className="font-medium text-base tracking-normal">
-                                    Embroidered Seersucker Shirt
-                                </p>
-                            </div>
-                            <div className="font-medium text-base tracking-normal">
-                                $ 99
+                                <div className="font-medium text-base tracking-normal">{product.price}</div>
                             </div>
                         </div>
-                    </div>
-                    <div className="flex flex-col gap-3.5 min-w-76 w-76 h-auto items-center">
-                        <div className="relative flex flex-col items-center">
-                            <img src={shirt2} alt="shirt 2" className="w-76 h-78" />
-                            <button className="outline-none border-none cursor-pointer">
-                                <img src={plusIcon} alt="plus icon" className="absolute  bottom-0 left-1/2 transform -translate-x-1/2" />
-                            </button>
-                        </div>
-                        <div className="flex justify-between items-end w-full">
-                            <div className="flex flex-col gap-2">
-                                <div className="flex flex-row items-center">
-                                    <p className="font-medium text-xs opacity-65 text-black tracking-normal">
-                                        Cotton T-Shirt
-                                    </p>
-                                    <div className="w-3 h-3 bg-black ml-1.5 mr-0.5"></div>
-                                    <p className="font-light text-xs opacity-65 text-black">+5</p>
-                                </div>
-                                <p className="font-medium text-base tracking-normal">
-                                    Basic Slim Fit T-Shirt
-                                </p>
-                            </div>
-                            <div className="font-medium text-base tracking-normal">
-                                $99
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-3.5 min-w-76 w-76 h-auto items-center">
-                        <div className="relative flex flex-col items-center">
-                            <img src={shirt3} alt="shirt 3" className="w-76 h-78" />
-                            <button className="outline-none border-none cursor-pointer">
-                                <img src={plusIcon} alt="plus icon" className="absolute  bottom-0 left-1/2 transform -translate-x-1/2" />
-                            </button>
-                        </div>
-                        <div className="flex justify-between items-end w-full">
-                            <div className="flex flex-col gap-2">
-                                <div className="flex flex-row items-center">
-                                    <p className="font-medium text-xs opacity-65 text-black tracking-normal">
-                                        Henley T-Shirt
-                                    </p>
-                                    <div className="w-3 h-3 bg-black ml-1.5 mr-0.5"></div>
-                                    <p className="font-light text-xs opacity-65 text-black">+5</p>
-                                </div>
-                                <p className="font-medium text-base tracking-normal">
-                                    Blurred Print T-Shirt
-                                </p>
-                            </div>
-                            <div className="font-medium text-base tracking-normal">
-                                $99
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-3.5 min-w-76 w-76 h-auto items-center">
-                        <div className="relative flex flex-col items-center">
-                            <img src={shirt4} alt="shirt 4" className="w-76 h-78" />
-                            <button className="outline-none border-none cursor-pointer">
-                                <img src={plusIcon} alt="plus icon" className="absolute  bottom-0 left-1/2 transform -translate-x-1/2" />
-                            </button>
-                        </div>
-                        <div className="flex justify-between items-end w-full">
-                            <div className="flex flex-col gap-2">
-                                <div className="flex flex-row items-center">
-                                    <p className="font-medium text-xs opacity-65 text-black tracking-normal">
-                                        Crewneck T-Shirt
-                                    </p>
-                                    <div className="w-3 h-3 bg-black ml-1.5 mr-0.5"></div>
-                                    <p className="font-light text-xs opacity-65 text-black">+5</p>
-                                </div>
-                                <p className="font-medium text-base tracking-normal">
-                                    Full Sleeve Zipper
-                                </p>
-                            </div>
-                            <div className="font-medium text-base tracking-normal">
-                                $99
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col gap-3.5 min-w-76 w-76 h-auto items-center">
-                        <div className="relative flex flex-col items-center">
-                            <img src={shirt1} alt="shirt 1" className="w-76 h-78" />
-                            <button className="outline-none border-none cursor-pointer">
-                                <img src={plusIcon} alt="plus icon" className="absolute  bottom-0 left-1/2 transform -translate-x-1/2" />
-                            </button>
-                        </div>
-                        <div className="flex justify-between items-end w-full">
-                            <div className="flex flex-col gap-2">
-                                <div className="flex flex-row items-center">
-                                    <p className="font-medium text-xs opacity-65 text-black tracking-normal">
-                                        V-Neck T-Shirt
-                                    </p>
-                                    <div className="w-3 h-3 bg-black ml-1.5 mr-0.5"></div>
-                                    <p className="font-light text-xs opacity-65 text-black">+5</p>
-                                </div>
-                                <p className="font-medium text-base tracking-normal">
-                                    Embroidered Seersucker Shirt
-                                </p>
-                            </div>
-                            <div className="font-medium text-base tracking-normal">
-                                $ 99
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-3.5 min-w-76 w-76 h-auto items-center">
-                        <div className="relative flex flex-col items-center">
-                            <img src={shirt2} alt="shirt 2" className="w-76 h-78" />
-                            <button className="outline-none border-none cursor-pointer">
-                                <img src={plusIcon} alt="plus icon" className="absolute  bottom-0 left-1/2 transform -translate-x-1/2" />
-                            </button>
-                        </div>
-                        <div className="flex justify-between items-end w-full">
-                            <div className="flex flex-col gap-2">
-                                <div className="flex flex-row items-center">
-                                    <p className="font-medium text-xs opacity-65 text-black tracking-normal">
-                                        Cotton T-Shirt <span className=""></span>+5
-                                    </p>
-                                    <div className="w-3 h-3 bg-black ml-1.5 mr-0.5"></div>
-                                    <p className="font-light text-xs opacity-65 text-black">+5</p>
-                                </div>
-                                <p className="font-medium text-base tracking-normal">
-                                    Basic Slim Fit T-Shirt
-                                </p>
-                            </div>
-                            <div className="font-medium text-base tracking-normal">
-                                $99
-                            </div>
-                        </div>
-                    </div>
+                    ))}
                 </div>
                 <div className="flex flex-row justify-center items-center gap-3">
-                    <button className="w-10 h-10 cursor-pointer outline-none border-none">
-                        <img src={arrowMuted} alt="Arrow" className="w-10 h-10 cursor-pointer" />
+                    <button onClick={() => handlePaginate({
+                        direction: 'prev',
+                        currentIndex: startIndexShirt,
+                        perPage: shirtPerPage,
+                        totalLength: shirtDetails.length,
+                        setIndex: setStartIndexShirt
+                    })} disabled={!canGoPrevShirt} className="w-10 h-10 cursor-pointer outline-none border-none">
+                        <img src={!canGoPrevShirt ? arrowMuted : arrow} alt="Arrow" className={`w-10 h-10 cursor-pointer ${!canGoPrevShirt ? "" : "rotate-180"}`} />
                     </button>
-                    <button className="w-10 h-10 cursor-pointer">
-                        <img src={arrow} alt="Arrow" className="w-10 h-10 cursor-pointer" />
+                    <button onClick={() => handlePaginate({
+                        direction: 'next',
+                        currentIndex: startIndexShirt,
+                        perPage: shirtPerPage,
+                        totalLength: shirtDetails.length,
+                        setIndex: setStartIndexShirt
+                    })} disabled={!canGoNextShirt} className="w-10 h-10 cursor-pointer">
+                        <img src={!canGoNextShirt ? arrowMuted : arrow} alt="Arrow" className={`w-10 h-10 cursor-pointer ${!canGoNextShirt ? "rotate-180" : ""}`} />
                     </button>
                 </div>
             </section>
@@ -256,18 +275,19 @@ const HomePage = () => {
                 </h1>
                 <div className="flex flex-row items-end justify-between mb-[1.125rem]">
                     <div className="font-extrabold flex flex-row items-center gap-10 tracking-normal">
-                        <button className="outline-none border-none cursor-pointer text-black">
-                            (ALL)
-                        </button>
-                        <button className="outline-none border-none cursor-pointer text-[#8A8A8A]">
-                            Men
-                        </button>
-                        <button className="outline-none border-none cursor-pointer text-[#8A8A8A]">
-                            Women
-                        </button>
-                        <button className="outline-none border-none cursor-pointer text-[#8A8A8A]">
-                            KID
-                        </button>
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                className={`outline-none border-none cursor-pointer ${activeCategory === cat ? "text-black" : "text-[#8A8A8A]"
+                                    }`}
+                                onClick={() => {
+                                    setActiveCategory(cat);
+                                    setShowAll(false); // reset on tab change
+                                }}
+                            >
+                                {cat.toUpperCase()}
+                            </button>
+                        ))}
                     </div>
                     <div className="tracking-normal flex flex-row items-start gap-[6.8125rem]">
                         <button className="outline-none border-none cursor-pointer text-black text-sm">
@@ -285,12 +305,33 @@ const HomePage = () => {
                     </div>
                 </div>
                 <hr className='border-t border-[#5E5E5E] mb-[2.3125rem]' />
+
                 <div className="grid grid-cols-4 gap-9 justify-items-center mb-6">
-                    <div className="flex flex-col gap-3.5 min-w-[22.875rem] w-[22.875rem] h-auto items-center">
+                    {displayedProducts.map((product) => (
+                        <div key={product.id} className="flex flex-col gap-3.5 min-w-[22.875rem] w-[22.875rem] items-center">
+                            <div className="relative flex flex-col items-center">
+                                <img src={product.image} alt={product.name} className="w-[22.875rem] h-94" />
+                                <button className="outline-none border-none cursor-pointer">
+                                    <img src={plusIcon} alt="plus icon" className="absolute bottom-0 left-1/2 transform -translate-x-1/2" />
+                                </button>
+                            </div>
+                            <div className="flex justify-between items-end w-full">
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex flex-row items-center">
+                                        <p className="font-medium text-xs opacity-65 text-black tracking-normal">{product.subtitle}</p>
+                                    </div>
+                                    <p className="font-medium text-base tracking-normal">{product.name}</p>
+                                </div>
+                                <div className="font-medium text-base tracking-normal">${product.price}</div>
+                            </div>
+                        </div>
+                    ))}
+
+                    {/* <div className="flex flex-col gap-3.5 min-w-[22.875rem] w-[22.875rem] h-auto items-center">
                         <div className="relative flex flex-col items-center">
                             <img src={product4} alt="product 4" className="w-[22.875rem] h-94" />
                             <button className="outline-none border-none cursor-pointer">
-                                <img src={plusIcon} alt="plus icon" className="absolute  bottom-0 left-1/2 transform -translate-x-1/2" />
+                                <img src={plusIcon} alt="plus icon" className="absolute bottom-0 left-1/2 transform -translate-x-1/2" />
                             </button>
                         </div>
                         <div className="flex justify-between items-end w-full">
@@ -299,57 +340,7 @@ const HomePage = () => {
                                     <p className="font-medium text-xs opacity-65 text-black tracking-normal">
                                         Cotton T-Shirt
                                     </p>
-                                    {/* <div className="w-3 h-3 bg-black ml-1.5 mr-0.5"></div>
-                                    <p className="font-light text-xs opacity-65 text-black">+5</p> */}
-                                </div>
-                                <p className="font-medium text-base tracking-normal">
-                                    Basic Heavy Weight T-shirt
-                                </p>
-                            </div>
-                            <div className="font-medium text-base tracking-normal">
-                                $ 199
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-3.5 min-w-[22.875rem] w-[22.875rem] h-auto items-center">
-                        <div className="relative flex flex-col items-center">
-                            <img src={product1} alt="product 1" className="w-[22.875rem] h-94" />
-                            <button className="outline-none border-none cursor-pointer">
-                                <img src={plusIcon} alt="plus icon" className="absolute  bottom-0 left-1/2 transform -translate-x-1/2" />
-                            </button>
-                        </div>
-                        <div className="flex justify-between items-end w-full">
-                            <div className="flex flex-col gap-2">
-                                <div className="flex flex-row items-center">
-                                    <p className="font-medium text-xs opacity-65 text-black tracking-normal">
-                                        Cotton jeans
-                                    </p>
-                                    <div className="w-3 h-3 bg-white ml-1.5 mr-0.5"></div>
-                                    <p className="font-light text-xs opacity-65 text-black">+5</p>
-                                </div>
-                                <p className="font-medium text-base tracking-normal">
-                                    Soft Wash straight Fit Jeans
-                                </p>
-                            </div>
-                            <div className="font-medium text-base tracking-normal">
-                                $ 199
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-3.5 min-w-[22.875rem] w-[22.875rem] h-auto items-center">
-                        <div className="relative flex flex-col items-center">
-                            <img src={product3} alt="product 3" className="w-[22.875rem] h-94" />
-                            <button className="outline-none border-none cursor-pointer">
-                                <img src={plusIcon} alt="plus icon" className="absolute  bottom-0 left-1/2 transform -translate-x-1/2" />
-                            </button>
-                        </div>
-                        <div className="flex justify-between items-end w-full">
-                            <div className="flex flex-col gap-2">
-                                <div className="flex flex-row items-center">
-                                    <p className="font-medium text-xs opacity-65 text-black tracking-normal">
-                                        Cotton T-Shirt
-                                    </p>
-                                    <div className="w-3 h-3 bg-white ml-1.5 mr-0.5"></div>
+                                    <div className="w-3 h-3 bg-black ml-1.5 mr-0.5"></div>
                                     <p className="font-light text-xs opacity-65 text-black">+5</p>
                                 </div>
                                 <p className="font-medium text-base tracking-normal">
@@ -360,37 +351,19 @@ const HomePage = () => {
                                 $ 199
                             </div>
                         </div>
-                    </div>
-                    <div className="flex flex-col gap-3.5 min-w-[22.875rem] w-[22.875rem] h-auto items-center">
-                        <div className="relative flex flex-col items-center">
-                            <img src={product4} alt="product 4" className="w-[22.875rem] h-94" />
-                            <button className="outline-none border-none cursor-pointer">
-                                <img src={plusIcon} alt="plus icon" className="absolute  bottom-0 left-1/2 transform -translate-x-1/2" />
-                            </button>
-                        </div>
-                        <div className="flex justify-between items-end w-full">
-                            <div className="flex flex-col gap-2">
-                                <div className="flex flex-row items-center">
-                                    <p className="font-medium text-xs opacity-65 text-black tracking-normal">
-                                        Cotton T-Shirt
-                                    </p>
-                                    <div className="w-3 h-3 bg-[#a19080] ml-1.5 mr-0.5"></div>
-                                    <p className="font-light text-xs opacity-65 text-black">+5</p>
-                                </div>
-                                <p className="font-medium text-base tracking-normal">
-                                    Basic Heavy Weight T-shirt
-                                </p>
-                            </div>
-                            <div className="font-medium text-base tracking-normal">
-                                $ 199
-                            </div>
-                        </div>
-                    </div>
+                    </div> */}
                 </div>
-                <button className="flex flex-col items-center justify-center w-full gap-0.5 text-[#8A8A8A] text-base tracking-normal cursor-pointer">
-                    More
-                    <img src={downArrowIcon} alt="down arrow icon" className="h-3.5 w-3.5" />
-                </button>
+                {filteredProducts.length > 4 && (
+                    <button
+                        className="flex flex-col items-center justify-center w-full gap-0.5 text-[#8A8A8A] text-base tracking-normal cursor-pointer"
+                        onClick={() => setShowAll((prev) => !prev)}
+                    >
+                        {showAll && <img src={downArrowIcon} alt="down arrow icon" className="h-3.5 w-3.5 rotate-180" />}
+
+                        {showAll ? "Hide" : "More"}
+                        {!showAll ? <img src={downArrowIcon} alt="down arrow icon" className="h-3.5 w-3.5" /> : null}
+                    </button>
+                )}
             </section>
             <section className="flex flex-col justify-center items-center gap-[0.8125rem] mb-28">
                 <h1 className="text-5xl font-beatrice uppercase text-black">
