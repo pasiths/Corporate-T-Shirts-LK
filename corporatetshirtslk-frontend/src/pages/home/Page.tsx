@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import searchIcon from '@/assets/icons/search.svg';
 import arrowBig from '@/assets/icons/arrow-big.svg';
@@ -31,13 +31,39 @@ const changeFavicon = (faviconUrl: string) => {
     }
 };
 
+const productImages = [
+    product1, product2, product3, product4, product5, product6, product7,
+    product1, product2, product3, product4, product5, product6, product7
+];
+
 const HomePage = () => {
+
+    const [startIndex, setStartIndex] = useState(0);
+    const itemsPerPage = 4; // Number of items to show per page
+
     useEffect(() => {
         document.title = 'Home - Corporatet Shirts LK'; // Set your desired title
 
         // Change favicon dynamically
         changeFavicon('/logo.svg'); // or .ico, .png, etc.
     }, []);
+
+    const canGoNext = startIndex + itemsPerPage < productImages.length;
+    const canGoPrev = startIndex > 0;
+
+    const nextImages = () => {
+        if (canGoNext) {
+            setStartIndex(startIndex + itemsPerPage - 1);
+        }
+    };
+
+    const prevImages = () => {
+        if (canGoPrev) {
+            setStartIndex(startIndex - itemsPerPage + 1);
+        }
+    };
+
+    const visibleImages = productImages.slice(startIndex, startIndex + itemsPerPage);
 
     return (
         <div className="font-roboto-slab tracking-2px mx-[3.125rem] my-[4.375rem]">
@@ -71,7 +97,7 @@ const HomePage = () => {
                             2024
                         </p>
                     </div>
-                    <div className="flex flex-row items-center gap-10">
+                    <div className="flex flex-row items-center gap-10 w-100">
                         <button className="flex flex-row items-center justify-between pl-7 pr-5 w-2xs h-10 bg-[#d9d9d9] cursor-pointer">
                             <p className="text-base text-black tracking-normal">
                                 Go To Collection
@@ -79,20 +105,19 @@ const HomePage = () => {
                             <img src={arrowBig} alt="Big arrow" className="w-12 h-3" />
                         </button>
                         <div className="flex flex-row items-center gap-3">
-                            <button className="w-10 h-10 cursor-pointer outline-none border-none">
-                                <img src={arrowMuted} alt="Arrow" className="w-10 h-10 cursor-pointer" />
+                            <button onClick={prevImages} disabled={!canGoPrev} className="w-10 h-10 cursor-pointer outline-none border-none">
+                                <img src={!canGoPrev ? arrowMuted : arrow} alt="Arrow" className={`w-10 h-10 cursor-pointer ${!canGoPrev ? "" : "rotate-180"}`} />
                             </button>
-                            <button className="w-10 h-10 cursor-pointer">
-                                <img src={arrow} alt="Arrow" className="w-10 h-10 cursor-pointer" />
+                            <button onClick={nextImages} disabled={!canGoNext} className="w-10 h-10 cursor-pointer">
+                                <img src={!canGoNext ? arrowMuted : arrow} alt="Arrow" className={`w-10 h-10 cursor-pointer ${!canGoNext ? "rotate-180" : ""}`} />
                             </button>
                         </div>
                     </div>
                 </div>
                 <div className="flex items-center gap-10 overflow-hidden">
-                    <img src={product1} alt="Product 1" className='w-[22.875rem] h-[23.5rem]' />
-                    <img src={product2} alt="Product 2" className='w-[22.875rem] h-[23.5rem]' />
-                    <img src={product3} alt="Product 3" className='w-[22.875rem] h-[23.5rem]' />
-                    <img src={product4} alt="Product 4" className='w-[22.875rem] h-[23.5rem]' />
+                    {visibleImages.map((src, i) => (
+                        <img key={i} src={src} alt={`Product ${i + 1}`} className="w-[22.875rem] h-[23.5rem] min-w-[22.875rem] min-h-[23.5rem] border border-[#D7D7D7]" />
+                    ))}
                 </div>
             </section>
             <section className="flex flex-col gap-[1.875rem] mb-[7.25rem]">
