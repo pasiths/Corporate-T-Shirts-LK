@@ -5,6 +5,7 @@ import { PrismaClient } from "@prisma/client";
 
 import { IP, PORT } from "./secrets";
 import { errorMiddleware } from "./middlewares/errors";
+import rootRouter from "./routes/root";
 
 const app: Express = express();
 
@@ -19,16 +20,12 @@ app.use(
   })
 );
 
-app.get("/test", (req, res) => {
-  res.status(200).json({
-    message: "Hello from API",
-  });
-});
+app.use("/api", rootRouter);
 
 export const prisma = new PrismaClient();
 
 app.use(errorMiddleware);
 
-app.listen(PORT, IP,() => {
+app.listen(PORT, IP, () => {
   console.log(`Server is running on http://${IP}:${PORT}`);
 });
