@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { PrismaClient } from "@prisma/client";
 
 import { IP, PORT } from "./secrets";
 
@@ -17,13 +18,14 @@ app.use(
   })
 );
 
+export const prisma = new PrismaClient();
+
 app.get("/test", (req, res) => {
   res.status(200).json({
     message: "Hello from API",
   });
 });
 
-
-app.listen(PORT, IP,() => {
+app.listen(PORT, IP, () => {
   console.log(`Server is running on http://${IP}:${PORT}`);
 });
