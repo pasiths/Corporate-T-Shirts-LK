@@ -1,5 +1,6 @@
 export enum ErrorCode {
   INTERNAL_EXCEPTION = 100,
+  USER_ALREADY_EXISTS = 101,
 }
 
 export class HttpException extends Error {
