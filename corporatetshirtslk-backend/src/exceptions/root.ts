@@ -1,4 +1,6 @@
-export enum ErrorCode {}
+export enum ErrorCode {
+  INTERNAL_EXCEPTION = 100,
+}
 
 export class HttpException extends Error {
   message: string;

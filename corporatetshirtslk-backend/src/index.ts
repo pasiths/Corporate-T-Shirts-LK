@@ -4,7 +4,7 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 
 import { IP, PORT } from "./secrets";
-import { errorMiddleware } from "./middlewares/errors";
+import { errorMiddleware } from "./errors/errors";
 import rootRouter from "./routes/root";
 
 const app: Express = express();
