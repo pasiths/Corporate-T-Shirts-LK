@@ -3,7 +3,7 @@ import { Response } from "express";
 import { UserPayload } from "../types";
 import { JWT_SECRET, NODE_ENV } from "../secrets";
 
-const generateToken = (data: UserPayload, res: Response): string => {
+const generateToken = (data: UserPayload, res: Response) => {
   const payload = {
     id: data.id,
     role: data.role,
@@ -23,8 +23,6 @@ const generateToken = (data: UserPayload, res: Response): string => {
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: "strict",
   });
-
-  return token;
 };
 
 export default generateToken;
