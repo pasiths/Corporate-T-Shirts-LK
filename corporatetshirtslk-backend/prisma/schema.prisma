@@ -40,16 +40,22 @@ model Product {
   updatedAt   DateTime @updatedAt
   isActive    Boolean  @default(true)
 
-  Color        ProductColor[]    @relation("ProductColors")
   Category     ProductCategory[] @relation("ProductCategories")
   Tag          ProductTag[]      @relation("ProductTags")
-  ProductImage ProductImage[]    @relation("ProductImages")
+  ProductImage ProductImage[]
 }
 
 model ProductImage {
-  id       Int       @id @default(autoincrement())
-  imageUrl String
-  products Product[] @relation("ProductImages")
+  id        Int     @id @default(autoincrement())
+  imageUrl  String
+  colorName String?
+  colorCode String?
+  primary   Boolean @default(false)
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  // colors   ProductColor[] @relation("ProductColors")
 }
 
 model ProductCategory {
@@ -64,9 +70,10 @@ model ProductTag {
   products Product[] @relation("ProductTags")
 }
 
-model ProductColor {
-  id        Int       @id @default(autoincrement())
-  name      String
-  colorCode String
-  products  Product[] @relation("ProductColors")
-}
+// model ProductColor {
+//   id        Int       @id @default(autoincrement())
+//   name      String
+//   colorCode String
+
+//   ProductImage ProductImage[] @relation("ProductColors")
+// }
