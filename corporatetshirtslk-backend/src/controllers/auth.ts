@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "..";
 import { ErrorCode } from "../exceptions/root";
 import { BadRequestException } from "../exceptions/bad-request";
-import { hashPassword } from "../utils/hashPassword";
+import { comparePassword, hashPassword } from "../utils/hashPassword";
 import generateToken from "../utils/generateToken";
 
 export const signUp = async (req: Request, res: Response) => {
@@ -60,4 +60,41 @@ export const signUp = async (req: Request, res: Response) => {
     `LOG_BOOK ${user.username} SIGNED UP at ${new Date().toLocaleString()}`
   );
   res.json({ user: withoutPassword });
+};
+
+export const signIn = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  let user = await prisma.user.findUnique({
+    where: { email: email },
+  });
+
+  if (!user) {
+    throw new BadRequestException(
+      "Invalid email or password",
+      ErrorCode.INVALID_CREDENTIALS
+    );
+  }
+
+  if (!user.isActive) {
+    throw new BadRequestException(
+      "User account is not active",
+      ErrorCode.INVALID_CREDENTIALS
+    );
+  }
+
+  const isPasswordValid = await comparePassword(password, user.password);
+
+  if (!isPasswordValid) {
+    throw new BadRequestException(
+      "Invalid email or password",
+      ErrorCode.INVALID_CREDENTIALS
+    );
+  }
+  generateToken({ id: user.id, role: user.role }, res);
+  const { password: userPassword, ...withoutPassword } = user;
+  console.log(
+    `LOG_BOOK ${user.username} SIGNED IN at ${new Date().toLocaleString()}`
+  );
+  res.status(200).json({ user: withoutPassword });
 };
