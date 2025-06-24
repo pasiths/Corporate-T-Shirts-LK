@@ -56,7 +56,7 @@ export const authMiddleware = async (
         ErrorCode.UNAUTHORIZED
       );
     }
-    
+
     const { id } = decodedToken as { id: number };
 
     req.user = {
@@ -75,42 +75,48 @@ export const authMiddleware = async (
   }
 };
 
-export const requiredAdminMiddleware = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  if (!req.user || !req.user.id) {
-    throw new UnauthorizedException(
-      "Unauthorized: User ID is missing.",
-      ErrorCode.UNAUTHORIZED
-    );
-  }
-
-  const id =
-    typeof req.user.id === "string" ? parseInt(req.user.id, 10) : req.user.id;
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id },
-      select: { role: true },
-    });
-
-    if (!user || user.role !== UserRole.ADMIN) {
-       throw new UnauthorizedException(
-        "Unauthorized: Admin access required.",
+export const requireRoleMiddleware = (...allowedRoles: UserRole[]) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user || !req.user.id) {
+      throw new UnauthorizedException(
+        "Unauthorized: User ID is missing.",
         ErrorCode.UNAUTHORIZED
       );
     }
-    next();
-  } catch (error) {
-    if (error instanceof UnauthorizedException) {
-      throw error;
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: req.user.id },
+        select: { role: true },
+      });
+
+      if (!user || !allowedRoles.includes(user.role)) {
+        throw new UnauthorizedException(
+          `Unauthorized: ${allowedRoles.join(" or ")} access required.`,
+          ErrorCode.UNAUTHORIZED
+        );
+      }
+
+      next();
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new InternalException(
+        "Internal server error while checking user role access.",
+        null,
+        ErrorCode.INTERNAL_EXCEPTION
+      );
     }
-    throw new InternalException(
-      "Internal server error while checking admin access.",
-      null,
-      ErrorCode.INTERNAL_EXCEPTION
-    );
-  }
+  };
 };
+
+export const requiredAdminMiddleware = requireRoleMiddleware(UserRole.ADMIN);
+export const requiredManagerMiddleware = requireRoleMiddleware(
+  UserRole.MANAGER
+);
+export const requiredUserMiddleware = requireRoleMiddleware(UserRole.USER);
+export const requiredAdminOrManagerMiddleware = requireRoleMiddleware(
+  UserRole.ADMIN,
+  UserRole.MANAGER
+);
