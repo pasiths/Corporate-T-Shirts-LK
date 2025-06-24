@@ -277,13 +277,6 @@ export const updateProduct = async (req: Request, res: Response) => {
 
   const updateData = getChangedProductData(req.body, existingProduct);
 
-  if (Object.keys(updateData).length === 0) {
-    throw new NotFoundException(
-      `No changes detected for product with ID ${productId}`,
-      ErrorCode.NO_CHANGES_DETECTED
-    );
-  }
-
   const updatePayload =
     isActive !== undefined ? { ...updateData, isActive } : updateData;
 
