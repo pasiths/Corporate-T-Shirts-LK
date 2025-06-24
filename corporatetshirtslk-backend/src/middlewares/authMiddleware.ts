@@ -27,7 +27,6 @@ export const authMiddleware = async (
     const decodedToken = await new Promise((resolve, reject) => {
       jwt.verify(token, JWT_SECRET, {}, (err, decoded) => {
         if (err) {
-          console.log("error name :", err.name);
           if (err.name === "TokenExpiredError") {
             return reject(
               new UnauthorizedException(
