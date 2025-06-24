@@ -8,6 +8,7 @@ import {
   buildSizeData,
   buildTagData,
 } from "../utils/prismaUtils";
+import { getChangedProductData } from "../utils/productUtils";
 import { UserRole } from "@prisma/client";
 import { NotFoundException } from "../exceptions/not-found";
 import { ErrorCode } from "../exceptions/root";
@@ -237,4 +238,75 @@ export const createProduct = async (req: Request, res: Response) => {
     message: "Product created successfully",
     product: product,
   });
+};
+
+export const updateProduct = async (req: Request, res: Response) => {
+  const productId = Number(req.params.productId);
+  if (isNaN(productId) || productId <= 0) {
+    throw new NotFoundException(
+      "Invalid product ID",
+      ErrorCode.INVALID_PRODUCT_ID
+    );
+  }
+
+  let isActive: boolean | undefined = undefined;
+
+  const where: any = {
+    id: productId,
+    isActive: true,
+  };
+
+  if (req.user?.role === UserRole.ADMIN) {
+    delete where.isActive;
+    isActive = req.body.isActive !== undefined ? req.body.isActive : undefined;
+  }
+
+  const existingProduct = await prisma.product.findUnique({
+    where,
+    include: {
+      ...includeProductRelations,
+    },
+  });
+
+  if (!existingProduct) {
+    throw new NotFoundException(
+      `Product with ID ${productId} not found`,
+      ErrorCode.PRODUCT_NOT_FOUND
+    );
+  }
+
+  const updateData = getChangedProductData(req.body, existingProduct);
+
+  if (Object.keys(updateData).length === 0) {
+    throw new NotFoundException(
+      `No changes detected for product with ID ${productId}`,
+      ErrorCode.NO_CHANGES_DETECTED
+    );
+  }
+
+  const updatePayload =
+    isActive !== undefined ? { ...updateData, isActive } : updateData;
+
+  const updatedProduct = await prisma.product.update({
+    where,
+    data: updatePayload,
+    include: {
+      ...includeProductRelations,
+    },
+  });
+
+  if (!updatedProduct) {
+    throw new NotFoundException(
+      `Failed to update product with ID ${productId}`,
+      ErrorCode.PRODUCT_NOT_FOUND
+    );
+  }
+
+  console.log(
+    `LOG_BOOK - User: ${req.user?.username} updated product - ID: ${
+      updatedProduct.id
+    } at ${new Date().toLocaleString()}`
+  );
+
+  res.status(200).json(updatedProduct);
 };

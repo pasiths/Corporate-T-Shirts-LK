@@ -8,6 +8,7 @@ import {
   createProduct,
   getByProductId,
   getProducts,
+  updateProduct,
 } from "../controllers/products";
 
 const productRouter: Router = Router();
@@ -19,6 +20,11 @@ productRouter.post(
   "/",
   errorHandler(requiredAdminOrManagerMiddleware),
   errorHandler(createProduct)
+);
+productRouter.put(
+  "/:productId",
+  errorHandler(requiredAdminOrManagerMiddleware),
+  errorHandler(updateProduct)
 );
 
 export default productRouter;
