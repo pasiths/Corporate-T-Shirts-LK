@@ -60,6 +60,8 @@ export const authMiddleware = async (
 
     req.user = {
       id: id,
+      username: "",
+      role: "",
     };
     next();
   } catch (error) {
@@ -86,7 +88,7 @@ export const requireRoleMiddleware = (...allowedRoles: UserRole[]) => {
     try {
       const user = await prisma.user.findUnique({
         where: { id: req.user.id },
-        select: { role: true },
+        select: { username: true, role: true },
       });
 
       if (!user || !allowedRoles.includes(user.role)) {
@@ -96,6 +98,9 @@ export const requireRoleMiddleware = (...allowedRoles: UserRole[]) => {
         );
       }
 
+      req.user.username = user.username;
+      req.user.role = user.role;
+      
       next();
     } catch (error) {
       if (error instanceof UnauthorizedException) {
