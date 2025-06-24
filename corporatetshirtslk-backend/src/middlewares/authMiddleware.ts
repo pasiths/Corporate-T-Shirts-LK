@@ -76,7 +76,7 @@ export const authMiddleware = async (
 
 export const requireRoleMiddleware = (...allowedRoles: UserRole[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user || !req.user.id) {
+    if (!req.user || req.user.id === undefined || req.user.id === null) {
       throw new UnauthorizedException(
         "Unauthorized: User ID is missing.",
         ErrorCode.UNAUTHORIZED
