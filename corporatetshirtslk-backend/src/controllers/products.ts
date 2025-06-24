@@ -9,6 +9,8 @@ import {
   buildTagData,
 } from "../utils/prismaUtils";
 import { UserRole } from "@prisma/client";
+import { NotFoundException } from "../exceptions/not-found";
+import { ErrorCode } from "../exceptions/root";
 
 export const getProducts = async (req: Request, res: Response) => {
   const {
@@ -145,6 +147,53 @@ export const getProducts = async (req: Request, res: Response) => {
     currentPage: Number(page),
     totalPages: Math.ceil(totalCount / Number(limit)),
     products,
+  });
+};
+
+export const getByProductId = async (req: Request, res: Response) => {
+  const productId = Number(req.params.productId);
+  if (isNaN(productId) || productId <= 0) {
+    throw new NotFoundException(
+      "Invalid product ID",
+      ErrorCode.INVALID_PRODUCT_ID
+    );
+  }
+
+  const where: any = {
+    id: productId,
+    isActive: true,
+  };
+
+  if (
+    req.user?.role === UserRole.ADMIN ||
+    req.user?.role === UserRole.MANAGER
+  ) {
+    delete where.isActive;
+  }
+
+  const product = await prisma.product.findUnique({
+    where,
+    include: {
+      ...includeProductRelations,
+    },
+  });
+
+  if (!product) {
+    throw new NotFoundException(
+      `Product with ID ${productId} not found`,
+      ErrorCode.PRODUCT_NOT_FOUND
+    );
+  }
+
+  console.log(
+    `LOG_BOOK - User: ${
+      req.user?.username
+    } fetched product with ID: ${productId} at ${new Date().toLocaleString()}`
+  );
+
+  res.json({
+    message: "Products fetched successfully",
+    product,
   });
 };
 
