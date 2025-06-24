@@ -61,6 +61,7 @@ export const authMiddleware = async (
     req.user = {
       id: id,
       username: "",
+      role: "",
     };
     next();
   } catch (error) {
@@ -98,6 +99,8 @@ export const requireRoleMiddleware = (...allowedRoles: UserRole[]) => {
       }
 
       req.user.username = user.username;
+      req.user.role = user.role;
+      
       next();
     } catch (error) {
       if (error instanceof UnauthorizedException) {
