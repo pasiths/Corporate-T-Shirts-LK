@@ -8,6 +8,7 @@ import {
   buildSizeData,
   buildTagData,
 } from "../utils/prismaUtils";
+import { UserRole } from "@prisma/client";
 
 export const getProducts = async (req: Request, res: Response) => {
   const {
@@ -27,6 +28,13 @@ export const getProducts = async (req: Request, res: Response) => {
     AND: [],
     isActive: true,
   };
+
+  if (
+    req.user?.role === UserRole.ADMIN ||
+    req.user?.role === UserRole.MANAGER
+  ) {
+    delete where.isActive;
+  }
 
   if (q) {
     where.AND.push({
@@ -132,7 +140,7 @@ export const getProducts = async (req: Request, res: Response) => {
   );
 
   res.json({
-      message: "Products fetched successfully",
+    message: "Products fetched successfully",
     totalCount,
     currentPage: Number(page),
     totalPages: Math.ceil(totalCount / Number(limit)),
