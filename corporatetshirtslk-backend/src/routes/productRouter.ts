@@ -4,10 +4,11 @@ import {
   authMiddleware,
   requiredAdminOrManagerMiddleware,
 } from "../middlewares/authMiddleware";
-import { createProduct } from "../controllers/products";
+import { createProduct, getProducts } from "../controllers/products";
 
 const productRouter: Router = Router();
 
+productRouter.get("/", errorHandler(getProducts));
 productRouter.use(errorHandler(authMiddleware));
 productRouter.post(
   "/",
