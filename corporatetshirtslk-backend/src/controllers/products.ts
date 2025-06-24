@@ -310,3 +310,43 @@ export const updateProduct = async (req: Request, res: Response) => {
 
   res.status(200).json(updatedProduct);
 };
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  const productId = Number(req.params.productId);
+  if (isNaN(productId) || productId <= 0) {
+    throw new NotFoundException(
+      "Invalid product ID",
+      ErrorCode.INVALID_PRODUCT_ID
+    );
+  }
+
+  const where: any = {
+    id: productId,
+  };
+
+  const existingProduct = await prisma.product.findUnique({
+    where,
+  });
+
+  if (!existingProduct) {
+    throw new NotFoundException(
+      `Product with ID ${productId} not found`,
+      ErrorCode.PRODUCT_NOT_FOUND
+    );
+  }
+
+  await prisma.product.update({
+    where,
+    data: { isActive: false },
+  });
+
+  console.log(
+    `LOG_BOOK - User: ${req.user?.username} deleted product - ID: ${
+      existingProduct.id
+    } at ${new Date().toLocaleString()}`
+  );
+
+  res.status(200).json({
+    message: `Product with ID ${productId} deleted successfully`,
+  });
+};

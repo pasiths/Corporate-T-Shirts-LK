@@ -6,6 +6,7 @@ import {
 } from "../middlewares/authMiddleware";
 import {
   createProduct,
+  deleteProduct,
   getByProductId,
   getProducts,
   updateProduct,
@@ -26,5 +27,9 @@ productRouter.put(
   errorHandler(requiredAdminOrManagerMiddleware),
   errorHandler(updateProduct)
 );
-
+productRouter.delete(
+  "/:productId",
+  errorHandler(requiredAdminOrManagerMiddleware),
+  errorHandler(deleteProduct)
+);
 export default productRouter;
