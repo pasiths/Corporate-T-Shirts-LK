@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
+import { UserRole } from "@prisma/client";
+
 import { UnauthorizedException } from "../exceptions/unauthorized";
 import { ErrorCode } from "../exceptions/root";
 import { JWT_SECRET } from "../secrets";
 import { InternalException } from "../exceptions/internal-exception";
+import { prisma } from "..";
 
 export const authMiddleware = async (
   req: Request,
@@ -66,6 +69,46 @@ export const authMiddleware = async (
     }
     throw new InternalException(
       "Internal server error during authentication.",
+      null,
+      ErrorCode.INTERNAL_EXCEPTION
+    );
+  }
+};
+
+export const requiredAdminMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.user || !req.user.id) {
+    throw new UnauthorizedException(
+      "Unauthorized: User ID is missing.",
+      ErrorCode.UNAUTHORIZED
+    );
+  }
+
+  const id =
+    typeof req.user.id === "string" ? parseInt(req.user.id, 10) : req.user.id;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: { role: true },
+    });
+
+    if (!user || user.role !== UserRole.ADMIN) {
+       throw new UnauthorizedException(
+        "Unauthorized: Admin access required.",
+        ErrorCode.UNAUTHORIZED
+      );
+    }
+    next();
+  } catch (error) {
+    if (error instanceof UnauthorizedException) {
+      throw error;
+    }
+    throw new InternalException(
+      "Internal server error while checking admin access.",
       null,
       ErrorCode.INTERNAL_EXCEPTION
     );
