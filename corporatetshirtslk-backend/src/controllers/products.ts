@@ -330,7 +330,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
   await prisma.product.update({
     where,
-    data: { isActive: false },
+    data: { isActive: false, deletedAt: new Date().toISOString() },
   });
 
   console.log(
